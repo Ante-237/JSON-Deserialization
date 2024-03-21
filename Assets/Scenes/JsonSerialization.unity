@@ -512,8 +512,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 115, y: -238}
-  m_SizeDelta: {x: 202.9385, y: 451.2}
+  m_AnchoredPosition: {x: 206.82788, y: -238}
+  m_SizeDelta: {x: 386.5943, y: 451.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1156996260
 MonoBehaviour:
@@ -566,7 +566,7 @@ Transform:
   m_GameObject: {fileID: 1158012235}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1.35, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -688,6 +688,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1425257665}
   - component: {fileID: 1425257664}
+  - component: {fileID: 1425257666}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -707,6 +708,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6099e157a4a87b74fae5c821082e5416, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  JD: {fileID: 1425257666}
+  ButtonPrefab: {fileID: 1204288926584407185, guid: c58cc9ad15d4e034094a2d765b8fe5eb, type: 3}
+  ParentObject: {fileID: 1156996259}
+  BallPrefab: {fileID: 8522774405278066434, guid: 8a5dfa50490272043ad5cdcb8b12616b, type: 3}
 --- !u!4 &1425257665
 Transform:
   m_ObjectHideFlags: 0
@@ -722,6 +727,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1425257666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1425257663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38636ddd60fe22d45a8b446a085b7c71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

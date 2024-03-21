@@ -1,164 +1,129 @@
-using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Text.Json;
 using Palmmedia.ReportGenerator.Core.Common;
+using TMPro;
 using Unity.Mathematics;
 using Unity.Serialization.Json;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
-
-//[System.Serializable]
-public class BallInfo
-{
-    public int ballId;
-    public float speed;
-    public float ballDirection;
-}
-
-//[System.Serializable]
-public class WorkOutInfo
-{
-    public int workoutID;
-    public string WorkoutName;
-    public string description;
-    public string ballType;
-    public List<BallInfo> workoutDetails;
-}
-
-//[System.Serializable]
-public class WorkOut
-{
-    public int numberofWorkoutBalls;
-    public List<WorkOutInfo> WorkOutInfos;
-}
-
-public enum ItemType
-{
-    Weapon,
-    Armor,
-    Consumable
-}
-
-class Item 
-{
-    public string Name;
-    public ItemType Type;
-}
-
-class Player 
-{
-    public string Name;
-    public int Health;
-    public int2 Position;
-    public Item[] Inventory;
-}
-
-
-/*
-OUTPUT:
-{
-    "Name": "Bob",
-    "Health": 100,
-    "Position": {
-        "x": 10,
-        "y": 20
-    },
-    "Inventory": [
-        {
-            "Name": "Sword",
-            "Type": 0
-        },
-        {
-            "Name": "Shield"
-            "Type": 1,
-        },
-        {
-            "Name": "Health Potion"
-            "Type": 2
-        }
-    ]
-}
-*/
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class SerializerManager : MonoBehaviour
 {
-    private readonly string fileName = "data.json";
+    public JsonDeserialization JD;
+    public Button ButtonPrefab;
+    public Transform ParentObject;
+    public GameObject BallPrefab;
+    public int ScaleFactor = 4;
+
+    private WorkOut Data;
 
 
-    private void JsonReader()
-    {
-        string filePath = Path.Combine("Assets", fileName);
-        // Debug.Log(filePath);
-
-        if (!File.Exists(filePath))
-        {
-            Debug.LogWarning("File not Found!!");
-            return;
-        }
-
-        string jsonData = File.ReadAllText(filePath);
-        Debug.Log(jsonData);
-
-        WorkOut json = JsonSerialization.FromJson<WorkOut>(jsonData);
-        
-
-        // int indexOfNumberOfWorkoutBalls = jsonData.IndexOf("\"numberOfWorkoutBalls\":");
-        // int indexOfWorkOutInfo = jsonData.IndexOf("\"workoutInfo\":");
-
-        // if (indexOfNumberOfWorkoutBalls < 0 || indexOfWorkOutInfo < 0)
-        //  {
-        //    Debug.LogError("Invalid JSON data format");
-        //     return; // Handle invalid JSON format (optional)
-        // }
-
-
-        // Extract the value for "numberOfWorkoutBalls"
-        // string numberOfWorkoutBallsString = jsonData.Substring(indexOfNumberOfWorkoutBalls + 22, jsonData.IndexOf(",", indexOfNumberOfWorkoutBalls) - indexOfNumberOfWorkoutBalls - 22);
-        // int numberOfWorkoutBalls = int.Parse(numberOfWorkoutBallsString);
-
-        // WorkOut info = JsonUtility.FromJson<WorkOut>(jsonData);
-        // Debug.Log(info.WorkOutInfos.Count);
-
-        /*
-        if (info != null)
-        {
-            Debug.Log($"Number of Workout Balls: {info.numberofWorkoutBalls}");
-            foreach (WorkOutInfo workout in info.WorkOutInfos)
-            {
-                Debug.Log($"Workout ID: {workout.workoutID}, Name: {workout.WorkoutName}");
-                foreach (BallInfo detail in workout.workoutDetails)
-                {
-                    Debug.Log($"  Ball ID: {detail.ballId}, Speed: {detail.speed}, Direction: {detail.ballDirection}");
-                }
-            }
-        }*/
-        var player = new Player 
-        {  
-            Name = "Bob",  
-            Health = 100,  
-            Position = new int2(10, 20),  
-            Inventory = new[]  
-            {  
-                new Item {Name = "Sword", Type = ItemType.Weapon},  
-                new Item {Name = "Shield", Type = ItemType.Armor},  
-                new Item {Name = "Health Potion", Type = ItemType.Consumable}  
-            }  
-        };
-        
-        
-        var jsonstring = JsonSerialization.ToJson(player);
-        Debug.Log(jsonstring);
-        var deserializedPlayer = JsonSerialization.FromJson<Player>(jsonstring);
-        Debug.Log(deserializedPlayer.Name);
-        
-
-    }
-
+    private int NumberOfButtons;
+    private int NumberOfBalls;
     private void Start()
     {
-        JsonReader();
-        
-        
+       Data = JD.JsonReader();
+
+       NumberOfButtons = Data.workoutInfo.Count;
+       NumberOfBalls = Data.numberOfWorkoutBalls;
+
+       for (int i = 0; i < NumberOfButtons; i++)
+       {
+           Button CurrentButton = Instantiate(ButtonPrefab, Vector3.zero, Quaternion.identity, ParentObject.transform);
+           TextMeshProUGUI TextComponent = CurrentButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+           TextComponent.text = Data.workoutInfo[i].workoutName;
+           if (Data.workoutInfo[i].ballType == "rolling ball")
+           {
+               CurrentButton.onClick.AddListener(RollingBall);
+           }else if (Data.workoutInfo[i].ballType == "bouncing ball")
+           {
+               CurrentButton.onClick.AddListener(BouncingBalling);
+           }else if (Data.workoutInfo[i].ballType == "linedrive ball")
+           {
+               CurrentButton.onClick.AddListener(LineDriveBall);
+           }else if (Data.workoutInfo[i].ballType == "pop-up ball")
+           {
+               CurrentButton.onClick.AddListener(PopUpBall);
+           }
+       }
     }
     
+
+    public void RollingBall()
+    {
+        for (int j = 0; j < Data.workoutInfo.Count; j++)
+        {
+            if (Data.workoutInfo[j].ballType == "rolling ball")
+            {
+                for (int i = 0; i < NumberOfBalls; i++)
+                {
+                    GameObject obj = Instantiate(BallPrefab, new Vector3(Random.insideUnitSphere.x, 0, Random.insideUnitSphere.z) * ScaleFactor, Quaternion.identity);
+                    obj.name = "rolling ball";
+                    balls b = obj.GetComponent<balls>();
+                    b.BallId = Data.workoutInfo[j].workoutDetails[i].ballId;
+                    b.MoveObject(Data.workoutInfo[j].workoutDetails[i].ballDirection, Data.workoutInfo[j].workoutDetails[i].speed);
+                }
+            }
+        }
+        
+       
+    }
+
+    public void BouncingBalling()
+    {
+        for (int j = 0; j < Data.workoutInfo.Count; j++)
+        {
+            if (Data.workoutInfo[j].ballType == "bouncing ball")
+            {
+                for (int i = 0; i < NumberOfBalls; i++)
+                {
+                    GameObject obj = Instantiate(BallPrefab, new Vector3(Random.insideUnitSphere.x, 0, Random.insideUnitSphere.z) * ScaleFactor, Quaternion.identity);
+                    obj.name = "bouncing ball";
+                    balls b = obj.GetComponent<balls>();
+                    b.BallId = Data.workoutInfo[j].workoutDetails[i].ballId;
+                    b.MoveObject(Data.workoutInfo[j].workoutDetails[i].ballDirection, Data.workoutInfo[j].workoutDetails[i].speed);
+                }
+            }
+        }
+    }
+
+    public void LineDriveBall()
+    {
+        for (int j = 0; j < Data.workoutInfo.Count; j++)
+        {
+            if (Data.workoutInfo[j].ballType == "linedrive ball")
+            {
+                for (int i = 0; i < NumberOfBalls; i++)
+                {
+                    GameObject obj = Instantiate(BallPrefab,new Vector3(Random.insideUnitSphere.x, 0, Random.insideUnitSphere.z) * ScaleFactor, Quaternion.identity);
+                    obj.name = "linedrive ball";
+                    balls b = obj.GetComponent<balls>();
+                    b.BallId = Data.workoutInfo[j].workoutDetails[i].ballId;
+                    b.MoveObject(Data.workoutInfo[j].workoutDetails[i].ballDirection, Data.workoutInfo[j].workoutDetails[i].speed);
+                }
+            }
+        }
+    }
+
+    public void PopUpBall()
+    {
+        for (int j = 0; j < Data.workoutInfo.Count; j++)
+        {
+            if (Data.workoutInfo[j].ballType == "pop-up ball")
+            {
+                for (int i = 0; i < NumberOfBalls; i++)
+                {
+                    GameObject obj = Instantiate(BallPrefab, new Vector3(Random.insideUnitSphere.x, 0, Random.insideUnitSphere.z) * ScaleFactor, Quaternion.identity);
+                    obj.name = "pop-up ball";
+                    balls b = obj.GetComponent<balls>();
+                    b.BallId = Data.workoutInfo[j].workoutDetails[i].ballId;
+                    b.MoveObject(Data.workoutInfo[j].workoutDetails[i].ballDirection, Data.workoutInfo[j].workoutDetails[i].speed);
+                }
+            }
+        }
+    }
     
 }
