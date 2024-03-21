@@ -35,6 +35,7 @@ public class SerializerManager : MonoBehaviour
            Button CurrentButton = Instantiate(ButtonPrefab, Vector3.zero, Quaternion.identity, ParentObject.transform);
            TextMeshProUGUI TextComponent = CurrentButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
            TextComponent.text = Data.workoutInfo[i].workoutName;
+           TextComponent.text += "\n" + "<size=10>" + Data.workoutInfo[i].description + "</size>";
            if (Data.workoutInfo[i].ballType == "rolling ball")
            {
                CurrentButton.onClick.AddListener(RollingBall);

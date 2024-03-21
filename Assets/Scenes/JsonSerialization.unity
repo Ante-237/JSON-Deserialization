@@ -512,8 +512,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 206.82788, y: -238}
-  m_SizeDelta: {x: 386.5943, y: 451.2}
+  m_AnchoredPosition: {x: 311.17184, y: -300.46442}
+  m_SizeDelta: {x: 595.2822, y: 576.1288}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1156996260
 MonoBehaviour:
@@ -712,6 +712,7 @@ MonoBehaviour:
   ButtonPrefab: {fileID: 1204288926584407185, guid: c58cc9ad15d4e034094a2d765b8fe5eb, type: 3}
   ParentObject: {fileID: 1156996259}
   BallPrefab: {fileID: 8522774405278066434, guid: 8a5dfa50490272043ad5cdcb8b12616b, type: 3}
+  ScaleFactor: 4
 --- !u!4 &1425257665
 Transform:
   m_ObjectHideFlags: 0
