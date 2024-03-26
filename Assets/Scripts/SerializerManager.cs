@@ -23,6 +23,9 @@ public class SerializerManager : MonoBehaviour
 
     private int NumberOfButtons;
     private int NumberOfBalls;
+    private int DoublePop = 0;
+    private int DoubleRoll = 0;
+    
     private void Start()
     {
        Data = JD.JsonReader();
@@ -38,7 +41,13 @@ public class SerializerManager : MonoBehaviour
            TextComponent.text += "\n" + "<size=10>" + Data.workoutInfo[i].description + "</size>";
            if (Data.workoutInfo[i].ballType == "rolling ball")
            {
+               if (DoubleRoll == 1)
+               {
+                   CurrentButton.onClick.AddListener(RollingBallSecond);
+                   continue;
+               }
                CurrentButton.onClick.AddListener(RollingBall);
+               DoubleRoll += 1;
            }else if (Data.workoutInfo[i].ballType == "bouncing ball")
            {
                CurrentButton.onClick.AddListener(BouncingBalling);
@@ -47,7 +56,13 @@ public class SerializerManager : MonoBehaviour
                CurrentButton.onClick.AddListener(LineDriveBall);
            }else if (Data.workoutInfo[i].ballType == "pop-up ball")
            {
+               if (DoublePop == 1)
+               {
+                   CurrentButton.onClick.AddListener(PopUpBallSecond);
+                   continue;
+               }
                CurrentButton.onClick.AddListener(PopUpBall);
+               DoublePop += 1;
            }
        }
     }
@@ -67,10 +82,40 @@ public class SerializerManager : MonoBehaviour
                     b.BallId = Data.workoutInfo[j].workoutDetails[i].ballId;
                     b.MoveObject(Data.workoutInfo[j].workoutDetails[i].ballDirection, Data.workoutInfo[j].workoutDetails[i].speed);
                 }
+
+                break;
+            }
+            
+        }
+    }
+
+    public void RollingBallSecond()
+    {
+        int Second = 0;
+        for (int j = 0; j < Data.workoutInfo.Count; j++)
+        {
+            if (Data.workoutInfo[j].ballType == "rolling ball")
+            {
+                if (Second == 1)
+                {
+                    for (int i = 0; i < NumberOfBalls; i++)
+                    {
+                        GameObject obj = Instantiate(BallPrefab, new Vector3(Random.insideUnitSphere.x, 0, Random.insideUnitSphere.z) * ScaleFactor, Quaternion.identity);
+                        obj.name = "rolling ball";
+                        balls b = obj.GetComponent<balls>();
+                        b.BallId = Data.workoutInfo[j].workoutDetails[i].ballId;
+                        b.MoveObject(Data.workoutInfo[j].workoutDetails[i].ballDirection, Data.workoutInfo[j].workoutDetails[i].speed);
+                    }
+
+                    break;
+                }
+                else
+                {
+                    Second += 1;
+                }
+               
             }
         }
-        
-       
     }
 
     public void BouncingBalling()
@@ -123,6 +168,36 @@ public class SerializerManager : MonoBehaviour
                     b.BallId = Data.workoutInfo[j].workoutDetails[i].ballId;
                     b.MoveObject(Data.workoutInfo[j].workoutDetails[i].ballDirection, Data.workoutInfo[j].workoutDetails[i].speed);
                 }
+
+                break;
+            }
+        }
+    }
+
+    public void PopUpBallSecond()
+    {
+        int Second = 0;
+        for (int j = 0; j < Data.workoutInfo.Count; j++)
+        {
+            if (Data.workoutInfo[j].ballType == "pop-up ball")
+            {
+                if (Second == 1)
+                {
+                    for (int i = 0; i < NumberOfBalls; i++)
+                    {
+                        GameObject obj = Instantiate(BallPrefab, new Vector3(Random.insideUnitSphere.x, 0, Random.insideUnitSphere.z) * ScaleFactor, Quaternion.identity);
+                        obj.name = "pop-up ball";
+                        balls b = obj.GetComponent<balls>();
+                        b.BallId = Data.workoutInfo[j].workoutDetails[i].ballId;
+                        b.MoveObject(Data.workoutInfo[j].workoutDetails[i].ballDirection, Data.workoutInfo[j].workoutDetails[i].speed);
+                    } 
+                    break;
+                }
+                else
+                {
+                    Second += 1;
+                }
+                
             }
         }
     }
